@@ -17,39 +17,47 @@ namespace Planner3.Data.REPO
         {
             _ctx = ctx;
         }
-
-        public async Task<IEnumerable<WorkoutSession>> GetSessionsAsync()
+        public async Task<WorkoutSession> CreateSessionAsync(WorkoutSession session)
         {
-            return await _ctx.WorkoutSessions.ToListAsync();
-        }
-
-        public async Task<WorkoutSession> GetSessionById(int id)
-        {
-            return await _ctx.WorkoutSessions.FindAsync(id);
-        }
-
-        public async Task<WorkoutSession> CreateSessionAsync(WorkoutSession workoutSession)
-        {
-            _ctx.WorkoutSessions.Add(workoutSession);
+            _ctx.WorkoutSessions.Add(session);
             await _ctx.SaveChangesAsync();
-            return workoutSession;
+            return session;
         }
-
-        public async Task UpdateSessionAsync(WorkoutSession workoutSession)
+        public async Task<List<WorkoutSession>> GetAllSessionsAsync()
         {
-            _ctx.WorkoutSessions.Update(workoutSession);
-            await _ctx.SaveChangesAsync();
+            return await _ctx.WorkoutSessions
+                .Include(s => s.Exercises)
+                .ToListAsync();
         }
-
-        public async Task DeleteSessionAsync(WorkoutSession workoutSession)
+        public async Task<WorkoutSession> GetSessionsByIdAsync(int id)
         {
-            _ctx.WorkoutSessions.Remove(workoutSession);
-            await _ctx.SaveChangesAsync();
+            return await _ctx.WorkoutSessions
+                .Include(s => s.Exercises)
+                .FirstOrDefaultAsync(s => s.Id == id);
         }
-
-        public async Task<bool> UserExists(int userId)
+        public async Task UpdateSessionAsync(WorkoutSession session)
         {
-            return await _ctx.Users.AnyAsync(u => u.Id == userId);
+            var existingSession = await _ctx.WorkoutSessions.FindAsync(session.Id);
+            if (existingSession != null)
+            {
+                existingSession.Name = session.Name;
+                existingSession.Description = session.Description;
+                existingSession.Level = session.Level;
+                existingSession.Duration = session.Duration;
+                existingSession.Type = session.Type;
+
+                _ctx.WorkoutSessions.Update(existingSession);
+                await _ctx.SaveChangesAsync();
+            }
+        }
+        public async Task DeleteSessionAsync(int id)
+        {
+            var session = await _ctx.WorkoutSessions.FindAsync(id);
+            if (session != null)
+            {
+                _ctx.WorkoutSessions.Remove(session);
+                await _ctx.SaveChangesAsync();
+            }
         }
     }
 }

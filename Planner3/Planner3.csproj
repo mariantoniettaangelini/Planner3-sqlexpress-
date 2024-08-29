@@ -18,8 +18,4 @@
     <ProjectReference Include="..\Planner3.Data\Planner3.Data.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
 </Project>

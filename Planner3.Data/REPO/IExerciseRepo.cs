@@ -5,9 +5,9 @@ namespace Planner3.Data.REPO
     public interface IExerciseRepo
     {
         Task<Exercise> CreateExerciseAsync(Exercise exercise);
-        Task DeleteExerciseAsync(Exercise exercise);
-        Task<IEnumerable<Exercise>> GetExercisesAsync();
-        Task<Exercise> GetExercisesByIdAsync(int id);
+        Task DeleteExerciseAsync(int id);
+        Task<Exercise> GetExerciseByIdAsync(int id);
+        Task<List<Exercise>> GetExercisesAsync();
         Task UpdateExerciseAsync(Exercise exercise);
     }
 }
