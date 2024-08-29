@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Planner3.Data.DATACONTEXT;
+using Planner3.Data.REPO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,14 @@ builder.Services.AddSwaggerGen();
 // Configurazione DbContext
 builder.Services.AddDbContext<PlannerContext>(opt =>
 opt.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+
+builder.Services.AddScoped<IUserRepo, UserRepo>();
+builder.Services.AddScoped<IExerciseRepo, ExerciseRepo>();
+builder.Services.AddScoped<IWorkoutSessionRepo, WorkoutSessionRepo>();
+
+
+
+
 
 var app = builder.Build();
 

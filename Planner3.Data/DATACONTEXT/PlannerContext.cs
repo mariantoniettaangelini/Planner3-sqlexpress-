@@ -14,5 +14,16 @@ namespace Planner3.Data.DATACONTEXT
 
         public DbSet<User> Users { get; set; }
         public DbSet<Exercise> Exercises { get; set; }
+        public DbSet<WorkoutSession> WorkoutSessions { get; set; }
+        public DbSet<Progress> Progresses { get; set; }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<User>()
+            .Property(u => u.Id)
+            .ValueGeneratedOnAdd(); 
+
+        }
     }
 }
