@@ -27,18 +27,88 @@ namespace Planner3.Controllers
 
             return Ok(sessions);
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetWorkoutSessionById(int id)
+        //[HttpGet]
+        //public async Task<IActionResult> GetWorkoutSessionByType(string type = null, string muscleGroup = null)
+        //{
+        //    List<WorkoutSession> sessions;
+        //if(!string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(muscleGroup))
+        //{
+        //    // filtro tipo + gruppo muscolare
+        //    sessions = await _ctx.WorkoutSessions
+        //        .Include (ws => ws.Exercises)
+        //        .Where(ws=>ws.Type == type && ws.Exercises.Any(e=>e.MuscleGroup==muscleGroup)
+        //        ).ToListAsync();
+        //}
+        //else if (!string.IsNullOrEmpty(type))
+        //{
+        //    // filtro solo tipo
+        //    sessions = await _ctx.WorkoutSessions
+        //        .Include(ws=>ws.Exercises)
+        //        .Where(ws=>ws.Type==type)
+        //        .ToListAsync();
+        //}
+        //else if (!string.IsNullOrEmpty(muscleGroup))
+        //{
+        //    // filtro solo per gruppo muscolare
+        //    sessions = await _ctx.WorkoutSessions
+        //        .Include(ws=>ws.Exercises)
+        //        .Where(ws=>ws.Exercises.Any(e=>e.MuscleGroup == muscleGroup))
+        //        .ToListAsync ();
+        //}
+        //else
+        //{
+        //    // tutte le sessioni senza filtri
+        //    sessions = await _ctx.WorkoutSessions
+        //        .Include(ws => ws.Exercises)
+        //        .ToListAsync();
+        //}
+        //if (sessions.Count == 0)
+        //{
+        //    return NotFound("non ci sono allenamenti disponibili");
+        //}
+        //    return Ok(sessions);
+        //}
+        [HttpGet("ByType/{type}")]
+        public async Task<IActionResult> GetWorkoutSessionsByType(string type)
         {
-            var session = await _ctx.WorkoutSessions
-                .Include (ws => ws.Exercises)
-                .FirstOrDefaultAsync(ws => ws.Id == id);
-            if(session == null)
+            if (string.IsNullOrEmpty(type))
             {
-                return NotFound("sessione di allenamento non trovata");
+                return BadRequest("Inserisci il Tipo di esercizio che desideri");
             }
-            return Ok(session);
+
+            var sessions = await _ctx.WorkoutSessions
+                .Include(ws => ws.Exercises)
+                .Where(ws => ws.Type == type)
+                .ToListAsync();
+
+            if (!sessions.Any())
+            {
+                return NotFound("Non ci sono allenamenti disponibili");
+            }
+
+            return Ok(sessions);
         }
+        [HttpGet("ByMuscleGroup/{muscleGroup}")]
+        public async Task<IActionResult> GetWorkoutSessionsByMuscleGroup(string muscleGroup)
+        {
+            if (string.IsNullOrEmpty(muscleGroup))
+            {
+                return BadRequest("Inserisci il Gruppo muscolare che desideri allenare");
+            }
+
+            var sessions = await _ctx.WorkoutSessions
+                .Include(ws => ws.Exercises)
+                .Where(ws => ws.Exercises.Any(e => e.MuscleGroup == muscleGroup))
+                .ToListAsync();
+
+            if (!sessions.Any())
+            {
+                return NotFound("Non ci sono allenamenti disponibili");
+            }
+
+            return Ok(sessions);
+        }
+
         [HttpPost("Choose/{id}")]
         public async Task<IActionResult> ChooseSession(int id)
         {
