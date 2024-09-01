@@ -12,13 +12,14 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
     });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configurazione DbContext
 builder.Services.AddDbContext<PlannerContext>(opt =>
-opt.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+    opt.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
 
 builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddScoped<IWorkoutSessionRepo, WorkoutSessionRepo>();
@@ -30,13 +31,23 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.LoginPath = "/api/user/login"; // Path per il login
-        options.AccessDeniedPath = "/api/user/access-denied"; // Path per accesso negato
+        options.Cookie.SameSite = SameSiteMode.None; // Necessario per consentire l'invio dei cookie in richieste cross-origin
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Necessario per HTTPS
     });
 
 // Aggiunta autorizzazione
 builder.Services.AddAuthorization();
 
-
+// Aggiungi CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        corsBuilder => corsBuilder
+            .WithOrigins("http://localhost:4200") // Sostituisci con l'URL del tuo frontend
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials());
+});
 
 var app = builder.Build();
 
@@ -48,6 +59,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsPolicy"); // Applica la policy CORS
 
 app.UseAuthentication();
 app.UseAuthorization();
