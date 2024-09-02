@@ -25,49 +25,26 @@ namespace Planner3.Controllers
                 .Include(ws => ws.Exercises)
                 .ToListAsync();
 
+            Console.WriteLine($"Recuperate {sessions.Count} sessioni di workout");
+
             return Ok(sessions);
         }
-        //[HttpGet]
-        //public async Task<IActionResult> GetWorkoutSessionByType(string type = null, string muscleGroup = null)
-        //{
-        //    List<WorkoutSession> sessions;
-        //if(!string.IsNullOrEmpty(type) && !string.IsNullOrEmpty(muscleGroup))
-        //{
-        //    // filtro tipo + gruppo muscolare
-        //    sessions = await _ctx.WorkoutSessions
-        //        .Include (ws => ws.Exercises)
-        //        .Where(ws=>ws.Type == type && ws.Exercises.Any(e=>e.MuscleGroup==muscleGroup)
-        //        ).ToListAsync();
-        //}
-        //else if (!string.IsNullOrEmpty(type))
-        //{
-        //    // filtro solo tipo
-        //    sessions = await _ctx.WorkoutSessions
-        //        .Include(ws=>ws.Exercises)
-        //        .Where(ws=>ws.Type==type)
-        //        .ToListAsync();
-        //}
-        //else if (!string.IsNullOrEmpty(muscleGroup))
-        //{
-        //    // filtro solo per gruppo muscolare
-        //    sessions = await _ctx.WorkoutSessions
-        //        .Include(ws=>ws.Exercises)
-        //        .Where(ws=>ws.Exercises.Any(e=>e.MuscleGroup == muscleGroup))
-        //        .ToListAsync ();
-        //}
-        //else
-        //{
-        //    // tutte le sessioni senza filtri
-        //    sessions = await _ctx.WorkoutSessions
-        //        .Include(ws => ws.Exercises)
-        //        .ToListAsync();
-        //}
-        //if (sessions.Count == 0)
-        //{
-        //    return NotFound("non ci sono allenamenti disponibili");
-        //}
-        //    return Ok(sessions);
-        //}
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetWorkoutSessionById(int id)
+        {
+            var session = await _ctx.WorkoutSessions
+                .Include(ws => ws.Exercises)
+                .FirstOrDefaultAsync(ws => ws.Id == id);
+
+            if (session == null)
+            {
+                return NotFound("Workout session non trovata");
+            }
+
+            return Ok(session);
+        }
+
         [HttpGet("ByType/{type}")]
         public async Task<IActionResult> GetWorkoutSessionsByType(string type)
         {
