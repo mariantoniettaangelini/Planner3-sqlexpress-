@@ -139,28 +139,27 @@ namespace Planner3.Controllers
             }
             return Ok(user);
         }
-        [HttpPost("Progress")] //modifica in una GET
+        [HttpGet("Progress")]
         [Authorize]
-        public async Task<IActionResult> SaveProgress(int workoutSessionId)
+        public async Task<IActionResult> GetUserProgress()
         {
-            var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            var workoutSession = await _ctx.WorkoutSessions.FindAsync(workoutSessionId);
-            if (workoutSession == null)
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
             {
-                return NotFound("Sessione di allenamento non trovata");
+                return Unauthorized("Identificazione utente non valida");
             }
 
-            var progress = new Progress
+            var progresses = await _ctx.Progresses
+                .Where(p => p.UserId == int.Parse(userId))
+                .Include(p => p.WorkoutSession) 
+                .ToListAsync();
+
+            if (!progresses.Any())
             {
-                UserId = userId,
-                WorkoutSessionId = workoutSessionId,
-                IsCompleted = true
-            };
+                return NotFound("Non sono stati trovati progressi per l'utente.");
+            }
 
-            _ctx.Progresses.Add(progress);
-            await _ctx.SaveChangesAsync();
-
-            return Ok(progress);
+            return Ok(progresses);
         }
     }
 }

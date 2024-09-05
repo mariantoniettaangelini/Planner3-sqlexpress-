@@ -21,13 +21,21 @@ namespace Planner3.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWorkoutSessions()
         {
-            var sessions = await _ctx.WorkoutSessions
-                .Include(ws => ws.Exercises)
-                .ToListAsync();
+            try
+            {
+                var sessions = await _ctx.WorkoutSessions
+                    .Include(ws => ws.Exercises)
+                    .ToListAsync();
 
-            Console.WriteLine($"Recuperate {sessions.Count} sessioni di workout");
+                Console.WriteLine($"Recuperate {sessions.Count} sessioni di workout");
 
-            return Ok(sessions);
+                return Ok(sessions);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Errore interno del server: " + ex.Message);
+                return StatusCode(500, "Errore interno del server");
+            }
         }
 
         [HttpGet("{id}")]
@@ -53,18 +61,27 @@ namespace Planner3.Controllers
                 return BadRequest("Inserisci il Tipo di esercizio che desideri");
             }
 
-            var sessions = await _ctx.WorkoutSessions
-                .Include(ws => ws.Exercises)
-                .Where(ws => ws.Type == type)
-                .ToListAsync();
-
-            if (!sessions.Any())
+            try
             {
-                return NotFound("Non ci sono allenamenti disponibili");
-            }
+                var sessions = await _ctx.WorkoutSessions
+                    .Include(ws => ws.Exercises)
+                    .Where(ws => ws.Type == type)
+                    .ToListAsync();
 
-            return Ok(sessions);
+                if (!sessions.Any())
+                {
+                    return NotFound("Non ci sono allenamenti disponibili per il tipo specificato");
+                }
+
+                return Ok(sessions);
+            }
+            catch (Exception ex)
+            {
+                // Logga l'errore
+                return StatusCode(500, "Errore interno del server durante il recupero delle sessioni di allenamento");
+            }
         }
+
         [HttpGet("ByMuscleGroup/{muscleGroup}")]
         public async Task<IActionResult> GetWorkoutSessionsByMuscleGroup(string muscleGroup)
         {
