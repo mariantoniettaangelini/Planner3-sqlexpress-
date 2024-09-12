@@ -13,6 +13,7 @@ namespace Planner3.Controllers
 {
     [Route("api/user")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly PlannerContext _ctx;

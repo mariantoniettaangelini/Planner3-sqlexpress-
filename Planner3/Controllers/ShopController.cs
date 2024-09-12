@@ -84,14 +84,14 @@ namespace Planner3.Controllers
 
                 if(order == null)
             {
-                return NotFound("Prodotto non trovato nel carrello");
+                return NotFound(new { message = "Prodotto non trovato nel carrello" });
             }
             _ctx.Orders.Remove(order);
             await _ctx.SaveChangesAsync();
-            return Ok("Rimosso con successo");
+            return Ok(new { message = "Rimosso con successo" });
         }
 
-        [HttpPost("checkout{userId}")]
+        [HttpPost("checkout/{userId}")]
         public async Task<IActionResult> Checkout(int userId)
         {
             var cartItems = await _ctx.Orders
@@ -100,16 +100,16 @@ namespace Planner3.Controllers
 
             if(cartItems == null || cartItems.Count == 0)
             {
-                return BadRequest("Carrello vuoto");
+                return BadRequest(new { message = "Carrello vuoto" });
             }
 
-            foreach(var item in cartItems)
+            foreach (var item in cartItems)
             {
                 item.IsCompleted = true;
             }
             await _ctx.SaveChangesAsync();
 
-            return Ok("Ordine completato");
+            return Ok(new { message = "Ordine completato" });
         }
     }
 }
