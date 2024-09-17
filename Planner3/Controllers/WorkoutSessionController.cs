@@ -25,6 +25,8 @@ namespace Planner3.Controllers
             {
                 var sessions = await _ctx.WorkoutSessions
                     .Include(ws => ws.Exercises)
+                    //.IgnoreAutoIncludes()
+                    .Take(6)
                     .ToListAsync();
 
                 Console.WriteLine($"Recuperate {sessions.Count} sessioni di workout");
@@ -77,7 +79,6 @@ namespace Planner3.Controllers
             }
             catch (Exception ex)
             {
-                // Logga l'errore
                 return StatusCode(500, "Errore interno del server durante il recupero delle sessioni di allenamento");
             }
         }

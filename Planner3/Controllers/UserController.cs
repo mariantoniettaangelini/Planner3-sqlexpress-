@@ -44,15 +44,14 @@ namespace Planner3.Controllers
 
                     await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-                    // Restituisci l'oggetto utente completo
+                    // l'oggetto utente completo
                     return Ok(new
                     {
                         id = user.Id,
                         name = user.Name,
                         email = user.Email,
-                        experienceLevel = user.ExperienceLevel, // Assicurati che questi campi esistano nel modello utente
+                        experienceLevel = user.ExperienceLevel, 
                         goals = user.Goals
-                        // Aggiungi altri campi necessari
                     });
                 }
                 return Unauthorized(new
@@ -92,13 +91,12 @@ namespace Planner3.Controllers
                 _ctx.Users.Add(user);
                 await _ctx.SaveChangesAsync();
 
-                // auto login post registrazione ->
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Name),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        };
+                {
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var authProperties = new AuthenticationProperties();
@@ -130,8 +128,6 @@ namespace Planner3.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _ctx.Users
-                //.Include(u=>u.Progresses)
-                //.ThenInclude(p=>p.WorkoutSession)
                 .FirstOrDefaultAsync(u=>u.Id == int.Parse(userId));
 
             if(user == null)

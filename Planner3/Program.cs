@@ -6,6 +6,11 @@ using Planner3.Data.REPO;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.Limits.MaxRequestBodySize = null;
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers()
@@ -13,29 +18,6 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
-
-// JTW ->
-// Microsoft.AspNetCore.Authentication.JwtBearer
-// Microsoft.IdentityModel.JsonWebTokens
-//builder.Services.AddAuthenticationScheme(opt =>
-//{
-//    opt.DefaultAuthenticationScheme = JwtBearerDefaults.AuthenticationScheme;
-//    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//}).AddJwtBearer(opt =>
-//{
-//    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-//    {
-//        ValidateIssuer = true,
-//        ValidateAudience = true,
-//        ValidateLifetime = true,
-//        ClockSkew = TimeSpan.Zero,
-//        ValidateIssuerSigningKey = true,
-//        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//        ValidIssuer = builder.Configuration["Jwt:Audience"],
-//        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-//    };
-//});
 
 // builder.Services.AddAuthorization();
 
@@ -69,7 +51,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
         corsBuilder => corsBuilder
-            .WithOrigins("http://localhost:4200") // Sostituisci con l'URL del tuo frontend
+            .WithOrigins("http://localhost:4200") 
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials());
@@ -86,7 +68,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseCors("CorsPolicy"); // Applica la policy CORS
+app.UseCors("CorsPolicy"); // policy CORS
 
 app.UseAuthentication();
 app.UseAuthorization();

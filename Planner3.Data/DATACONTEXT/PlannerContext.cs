@@ -24,8 +24,12 @@ namespace Planner3.Data.DATACONTEXT
 
             modelBuilder.Entity<User>()
             .Property(u => u.Id)
-            .ValueGeneratedOnAdd(); 
+            .ValueGeneratedOnAdd();
 
+            //modelBuilder.Entity<Exercise>()
+            //    .Navigation(e => e.WorkoutSessions)
+            //    .AutoInclude
         }
+
     }
 }
