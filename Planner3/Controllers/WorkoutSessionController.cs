@@ -26,7 +26,7 @@ namespace Planner3.Controllers
                 var sessions = await _ctx.WorkoutSessions
                     .Include(ws => ws.Exercises)
                     //.IgnoreAutoIncludes()
-                    .Take(6)
+                    //.Take(5)
                     .ToListAsync();
 
                 Console.WriteLine($"Recuperate {sessions.Count} sessioni di workout");
@@ -39,6 +39,33 @@ namespace Planner3.Controllers
                 return StatusCode(500, "Errore interno del server");
             }
         }
+
+        //public async Task<IActionResult> GetWorkoutSessions(int pageNumber = 1, int pageSize = 10)
+        //{
+        //    try
+        //    {
+        //        var totalItems = await _ctx.WorkoutSessions.CountAsync();
+
+        //        var sessions = await _ctx.WorkoutSessions
+        //            .Include(ws => ws.Exercises)
+        //            .Skip((pageNumber - 1) * pageSize)
+        //            .Take(pageSize)
+        //            .ToListAsync();
+
+        //        return Ok(new
+        //        {
+        //            TotalItems = totalItems,
+        //            PageSize = pageSize,
+        //            CurrentPage = pageNumber,
+        //            Items = sessions
+        //        });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Errore interno del server: " + ex.Message);
+        //        return StatusCode(500, "Errore interno del server");
+        //    }
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetWorkoutSessionById(int id)

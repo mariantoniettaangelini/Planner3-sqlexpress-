@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Planner3.Data.MODELS;
@@ -23,5 +24,6 @@ public class Exercise
     public string Image { get; set; }
 
     // Un esercizio in più sessioni
+    [JsonIgnore]
     public ICollection<WorkoutSession> WorkoutSessions { get; set; }
 }
